@@ -9,12 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    /* ------------------------------------------------------------
-       ТОЛЬКО ВИЗУАЛЬНЫЕ УЛУЧШЕНИЯ — БЕЗ ИЗМЕНЕНИЯ ЛОГИКИ
-       Добавлены: тени, микроанимации, мягкие заголовки, новый фон
-    ------------------------------------------------------------ */
     :root {
-      --page:    #f0f2f5;        /* чуть более насыщенный, чем был */
+      --page:    #f0f2f5;
       --surface: #ffffff;
       --ink:     #1a1e2a;
       --text:    #2c313d;
@@ -43,21 +39,13 @@
     .screen { animation: fadeIn .25s ease; }
     .hidden { display: none !important; }
 
-    /* заголовок экрана */
     .head { margin-bottom: 24px; }
     .head h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: var(--ink); line-height: 1.2; }
     .head p { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
-    /* секции — мягкие заголовки */
     .sec { margin-bottom: 28px; }
-    .sec-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted2);
-      margin: 0 0 12px 0;
-    }
+    .sec-title { font-size: 14px; font-weight: 500; color: var(--muted2); margin: 0 0 12px 0; }
 
-    /* ----- ДАТЫ ----- */
     .date-row { display: flex; gap: 10px; overflow-x: auto; padding: 2px 1px 6px; scrollbar-width: none; }
     .date-row::-webkit-scrollbar { display: none; }
     .date-card {
@@ -66,7 +54,7 @@
       border-radius: var(--r2); padding: 12px 8px 10px;
       text-align: center; cursor: pointer;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+      transition: transform 0.1s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
     }
     .date-card .d-label { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
     .date-card .d-date { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 450; }
@@ -77,7 +65,6 @@
     }
     .date-card.active .d-label { color: var(--accent); font-weight: 600; }
 
-    /* ----- УСЛУГИ ----- */
     .service-list { display: flex; flex-direction: column; gap: 10px; }
     .service {
       display: flex; align-items: center; gap: 16px; background: var(--surface);
@@ -91,19 +78,20 @@
       box-shadow: 0 4px 12px rgba(31, 111, 235, 0.1);
       border-color: var(--accent);
     }
-    /* акцентная полоска слева */
     .service::before {
       content: '';
       width: 3px; height: 28px; background: transparent;
-      border-radius: 4px; transition: background 0.15s;
+      border-radius: 4px; flex: 0 0 auto; transition: background 0.15s;
     }
     .service.active::before { background: var(--accent); }
     .service .info { flex: 1; min-width: 0; }
     .service .s-name { font-size: 16px; font-weight: 600; color: var(--ink); }
     .service .s-desc { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
-    .service .s-dur { font-size: 13px; font-weight: 500; color: var(--muted2); background: #f0f2f5; padding: 4px 10px; border-radius: 40px; white-space: nowrap; }
+    .service .s-dur {
+      font-size: 13px; font-weight: 500; color: var(--muted2);
+      background: var(--page); padding: 4px 10px; border-radius: 40px; white-space: nowrap;
+    }
 
-    /* ----- СЛОТЫ ВРЕМЕНИ (моноширинный) ----- */
     .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .slot {
       background: var(--surface); border: 1px solid rgba(0, 0, 0, 0.06);
@@ -125,9 +113,8 @@
     }
     .hint { font-size: 13px; color: var(--muted); margin-top: 8px; padding-left: 4px; }
 
-    /* ----- ФОРМА ----- */
     .recap {
-      background: var(--accent-soft); border: 1px solid rgba(0, 0, 0, 0.04);
+      background: var(--accent-soft); border: 1px solid rgba(31, 111, 235, 0.12);
       border-radius: var(--r); padding: 14px 18px; font-size: 15px;
       color: var(--text); margin-bottom: 20px; font-weight: 500;
       box-shadow: var(--shadow-sm);
@@ -143,15 +130,17 @@
     .field label { display: block; font-size: 13px; font-weight: 500; color: var(--muted2); margin-bottom: 6px; }
     .field input {
       width: 100%; padding: 12px 0; border: none; border-bottom: 1.5px solid var(--line);
-      background: transparent; color: var(--text); font-size: 16px; font-family: 'IBM Plex Sans', monospace;
+      background: transparent; color: var(--text); font-size: 16px; font-family: 'IBM Plex Sans', sans-serif;
       transition: border-color 0.12s;
     }
     .field input:focus { outline: none; border-bottom-color: var(--accent); }
 
-    /* ----- ЭКРАН ГОТОВО ----- */
     .done { text-align: center; padding-top: 20px; }
-    .done .check { width: 56px; height: 56px; border-radius: 56px; background: var(--accent-soft); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border: none; }
-    .done .check svg { width: 28px; height: 28px; stroke: var(--accent); stroke-width: 2; }
+    .done .check {
+      width: 56px; height: 56px; border-radius: 56px; background: var(--accent-soft);
+      margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+    }
+    .done .check svg { width: 28px; height: 28px; }
     .done h1 { font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 20px; letter-spacing: -0.3px; }
     .summary {
       background: var(--surface); border: 1px solid rgba(0, 0, 0, 0.06);
@@ -169,8 +158,11 @@
       box-shadow: var(--shadow-sm);
     }
 
-    /* ----- КНОПКА ----- */
-    .footer { position: fixed; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, var(--page) 70%, transparent); padding: 14px 16px calc(16px + env(safe-area-inset-bottom)); z-index: 30; }
+    .footer {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, var(--page) 70%, transparent);
+      padding: 14px 16px calc(16px + env(safe-area-inset-bottom)); z-index: 30;
+    }
     .footer-inner { max-width: 440px; margin: 0 auto; }
     .cta {
       width: 100%; height: 56px; border: none; border-radius: 28px; background: var(--accent);
@@ -183,16 +175,19 @@
     .cta:disabled { background: #cdd2dc; box-shadow: none; transform: none; cursor: default; }
     .cta .spinner { width: 20px; height: 20px; border-width: 2px; border-color: rgba(255,255,255,.4); border-top-color: #fff; }
 
-    .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .7s linear infinite; flex: 0 0 auto; }
-    #overlay { position: fixed; inset: 0; background: var(--page); z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid var(--line); border-top-color: var(--accent);
+      animation: spin .7s linear infinite; flex: 0 0 auto;
+    }
+    #overlay {
+      position: fixed; inset: 0; background: var(--page); z-index: 60;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    }
     #overlay .spinner { width: 32px; height: 32px; border-width: 3px; }
     #overlay .txt { font-size: 14px; color: var(--muted); }
 
-    /* микроанимации появления элементов */
-    .date-card, .service, .slot {
-      animation: fadeUp 0.22s ease both;
-    }
-    /* задержки для списков — генерируются через JS, здесь общая анимация */
+    .date-card, .service, .slot { animation: fadeUp 0.22s ease both; }
   </style>
 </head>
 <body>
@@ -202,7 +197,6 @@
 <div class="app">
   <div id="reschedule-banner" class="banner hidden">Перенос записи: выберите новые дату и время. Прежняя запись будет отменена.</div>
 
-  <!-- Шаг 1 -->
   <div id="screen-select" class="screen hidden">
     <div class="head">
       <h1 id="title">Запись на автомойку</h1>
@@ -212,7 +206,7 @@
       <div class="sec-title">Что нужно сделать?</div>
       <div id="services" class="service-list"></div>
     </div>
-    <div class="sec">
+    <div class="sec" style="margin-top: 4px;">
       <div class="sec-title">Когда Вам удобно приехать?</div>
       <div id="dates" class="date-row"></div>
     </div>
@@ -223,21 +217,23 @@
     </div>
   </div>
 
-  <!-- Шаг 2 -->
   <div id="screen-form" class="screen hidden">
     <div class="head"><h1>Данные бронирования</h1></div>
     <div id="recap" class="recap"></div>
     <div class="form-card">
       <div class="field"><label>Марка автомобиля</label><input id="brand" placeholder="Toyota Camry" autocomplete="off"></div>
       <div class="field"><label>Госномер</label><input id="plate" placeholder="А123ВС777" autocomplete="off"></div>
-      <div class="field"><label>Телефон для связи</label><input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __"></div>
+      <div class="field"><label>Телефон для связи</label><input id="phone" type="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"></div>
     </div>
   </div>
 
-  <!-- Шаг 3 -->
   <div id="screen-done" class="screen hidden">
     <div class="done">
-      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#1f6feb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1f6feb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
       <h1>Запись подтверждена</h1>
       <div id="done-summary" class="summary"></div>
       <p class="note">Подтверждение отправлено в чат с ботом.</p>
@@ -250,36 +246,70 @@
 </div></div>
 
 <script>
-  // ===== ВСЯ ЛОГИКА ОСТАЛАСЬ БЕЗ ИЗМЕНЕНИЙ =====
-  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLyP5R3uqX2HC2K82neifEnZ4cP68e6E6JM2TtPZDBDxTzXAsQjV50JjI2GfPoVTFH/exec';
+  const APPS_SCRIPT_URL = 'PASTE_WEB_APP_URL';
 
-  var SERVICE_DESC = {
+  const SERVICE_DESC = {
     express: 'Быстрая мойка кузова снаружи',
     complex: 'Кузов снаружи и коврики',
     complex_salon: 'Полный комплекс с уборкой салона'
   };
 
-  var tg = window.Telegram.WebApp;
+  const tg = window.Telegram.WebApp;
   tg.ready(); tg.expand();
   try { tg.setBackgroundColor('#f0f2f5'); tg.setHeaderColor('#f0f2f5'); } catch (e) {}
 
-  var state = { date: null, service: null, serviceName: '', time: null, rescheduleOf: null, screen: 'select' };
+  let state = { date: null, service: null, serviceName: '', time: null, rescheduleOf: null, screen: 'select' };
   state.rescheduleOf = new URLSearchParams(location.search).get('reschedule');
 
-  var el = function (id) { return document.getElementById(id); };
-  var cta = el('cta'), BB = tg.BackButton;
+  const el = (id) => document.getElementById(id);
+  const cta = el('cta'), BB = tg.BackButton;
 
-  function api(q) { return fetch(APPS_SCRIPT_URL + '?' + q).then(function (r) { return r.json(); }); }
+  // ---------- localStorage: безопасная обёртка ----------
+  // На некоторых версиях iOS в TMA localStorage недоступен — ловим ошибку явно.
+  function lsGet(key) {
+    try { return localStorage.getItem(key) || ''; } catch (e) { return ''; }
+  }
+  function lsSet(key, val) {
+    try { localStorage.setItem(key, val); } catch (e) {}
+  }
+
+  function saveUserData(brand, plate, phone) {
+    if (brand) lsSet('carBrand', brand);
+    if (plate) lsSet('plateNumber', plate);
+    if (phone) lsSet('userPhone', phone);
+  }
+
+  function fillFormFromStorage() {
+    const brand = lsGet('carBrand');
+    const plate = lsGet('plateNumber');
+    const phone = lsGet('userPhone');
+
+    if (brand) el('brand').value = brand;
+    if (plate) el('plate').value = plate;
+
+    // FIX: всегда выставляем +7, если в storage ничего нет
+    if (phone) {
+      el('phone').value = phone.startsWith('+7') ? phone : formatPhone(phone);
+    } else {
+      el('phone').value = '+7 ';
+    }
+  }
+  // ------------------------------------------------------
+
+  function api(q) { return fetch(APPS_SCRIPT_URL + '?' + q).then(r => r.json()); }
   function post(p) {
-    return fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) })
-      .then(function (r) { return r.json(); });
+    return fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(p)
+    }).then(r => r.json());
   }
 
   function init() {
     if (state.rescheduleOf) el('reschedule-banner').classList.remove('hidden');
     cta.addEventListener('click', onCta);
-    BB.onClick(function () { goSelect(); });
-    api('action=getConfig').then(function (res) {
+    BB.onClick(() => goSelect());
+    api('action=getConfig').then(res => {
       if (!res.ok) return fail();
       el('overlay').classList.add('hidden');
       if (state.rescheduleOf) el('title').textContent = 'Перенос записи';
@@ -288,64 +318,87 @@
       goSelect();
     }).catch(fail);
   }
-  function fail() { el('overlay').innerHTML = '<div class="txt">Нет связи с сервером. Закройте и откройте заново.</div>'; }
+
+  function fail() {
+    el('overlay').innerHTML = '<div class="txt">Нет связи с сервером. Закройте и откройте заново.</div>';
+  }
 
   function renderDates(dates) {
-    var box = el('dates'); box.innerHTML = '';
-    var wd = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-    dates.forEach(function (d, i) {
-      var p = d.split('.'); var js = new Date(p[2], p[1] - 1, p[0]);
-      var label = i === 0 ? 'Сегодня' : i === 1 ? 'Завтра' : wd[js.getDay()];
-      var c = document.createElement('div');
+    const box = el('dates'); box.innerHTML = '';
+    const wd = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    dates.forEach((d, i) => {
+      const p = d.split('.'); const js = new Date(p[2], p[1] - 1, p[0]);
+      const label = i === 0 ? 'Сегодня' : i === 1 ? 'Завтра' : wd[js.getDay()];
+      const c = document.createElement('div');
       c.className = 'date-card';
       c.style.animationDelay = (i * 0.03) + 's';
-      c.innerHTML = '<div class="d-label">' + label + '</div><div class="d-date">' + p[0] + '.' + p[1] + '</div>';
-      c.onclick = function () { pick('dates', c, function () { state.date = d; }); };
+      c.innerHTML = `<div class="d-label">${label}</div><div class="d-date">${p[0]}.${p[1]}</div>`;
+      c.onclick = () => pick('dates', c, () => { state.date = d; });
       box.appendChild(c);
     });
   }
+
   function renderServices(services) {
-    var box = el('services'); box.innerHTML = '';
-    services.forEach(function (s, idx) {
-      var c = document.createElement('div');
+    const box = el('services'); box.innerHTML = '';
+    services.forEach((s, idx) => {
+      const c = document.createElement('div');
       c.className = 'service';
       c.style.animationDelay = (idx * 0.04) + 's';
-      c.innerHTML = '<div class="radio" style="display:none;"></div>'
-        + '<div class="info"><div class="s-name">' + s.name + '</div>'
-        + '<div class="s-desc">' + (SERVICE_DESC[s.id] || '') + '</div></div>'
-        + '<div class="s-dur">' + s.duration + ' мин</div>';
-      c.onclick = function () { pick('services', c, function () { state.service = s.id; state.serviceName = s.name; }); };
+      // FIX: убран мёртвый <div class="radio"> (radio-кнопка заменена левой полосой через ::before)
+      c.innerHTML = `<div class="info">
+          <div class="s-name">${s.name}</div>
+          <div class="s-desc">${SERVICE_DESC[s.id] || ''}</div>
+        </div>
+        <div class="s-dur">${s.duration} мин</div>`;
+      c.onclick = () => pick('services', c, () => { state.service = s.id; state.serviceName = s.name; });
       box.appendChild(c);
     });
   }
-  function clearActive(group) { Array.prototype.forEach.call(el(group).children, function (c) { c.classList.remove('active'); }); }
-  function pick(group, node, setter) { clearActive(group); node.classList.add('active'); setter(); state.time = null; loadSlots(); }
+
+  function clearActive(group) {
+    Array.from(el(group).children).forEach(c => c.classList.remove('active'));
+  }
+  function pick(group, node, setter) {
+    clearActive(group); node.classList.add('active'); setter(); state.time = null; loadSlots();
+  }
 
   function loadSlots() {
     el('slots').innerHTML = ''; el('slots-hint').textContent = ''; syncCta();
-    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите услугу и дату.'; return; }
+    if (!state.date || !state.service) {
+      // FIX: точное сообщение в зависимости от того, чего не хватает
+      if (!state.service && !state.date) {
+        el('slots-hint').textContent = 'Сначала выберите услугу и дату.';
+      } else if (!state.service) {
+        el('slots-hint').textContent = 'Сначала выберите услугу.';
+      } else {
+        el('slots-hint').textContent = 'Сначала выберите дату.';
+      }
+      return;
+    }
     el('slots').innerHTML = '<div class="loading-line"><div class="spinner"></div>Ищем свободное время…</div>';
     api('action=getSlots&date=' + encodeURIComponent(state.date) + '&service=' + encodeURIComponent(state.service))
-      .then(function (res) {
+      .then(res => {
         el('slots').innerHTML = '';
-        if (!res.ok || !res.slots.length) { el('slots-hint').textContent = 'На этот день свободного времени нет.'; return; }
-        res.slots.forEach(function (t, idx) {
-          var b = document.createElement('div');
+        if (!res.ok || !res.slots.length) {
+          el('slots-hint').textContent = 'На этот день свободного времени нет.'; return;
+        }
+        res.slots.forEach((t, idx) => {
+          const b = document.createElement('div');
           b.className = 'slot';
           b.style.animationDelay = (idx * 0.02) + 's';
           b.textContent = t;
-          b.onclick = function () { clearActive('slots'); b.classList.add('active'); state.time = t; syncCta(); };
+          b.onclick = () => { clearActive('slots'); b.classList.add('active'); state.time = t; syncCta(); };
           el('slots').appendChild(b);
         });
       });
   }
 
   function formatPhone(raw) {
-    var d = raw.replace(/\D/g, '');
+    let d = raw.replace(/\D/g, '');
     if (d[0] === '8') d = '7' + d.slice(1);
     if (d[0] !== '7') d = '7' + d;
     d = d.slice(0, 11);
-    var r = '+7';
+    let r = '+7';
     if (d.length > 1) r += ' (' + d.slice(1, 4);
     if (d.length >= 4) r += ') ' + d.slice(4, 7);
     if (d.length >= 7) r += '-' + d.slice(7, 9);
@@ -353,26 +406,38 @@
     return r;
   }
   el('phone').addEventListener('input', function () { this.value = formatPhone(this.value); });
-  el('phone').addEventListener('focus', function () { if (!this.value) this.value = '+7 '; });
+  // FIX: гарантируем +7 при фокусе, даже если поле полностью пустое (без данных в storage)
+  el('phone').addEventListener('focus', function () {
+    if (!this.value || this.value === '+7') this.value = '+7 ';
+  });
 
-  function goSelect() { state.screen = 'select'; show('screen-select'); BB.hide(); cta.textContent = 'Продолжить'; syncCta(); }
+  function goSelect() {
+    state.screen = 'select'; show('screen-select'); BB.hide();
+    cta.textContent = 'Продолжить'; syncCta();
+  }
   function goForm() {
     state.screen = 'form'; show('screen-form'); BB.show();
-    el('recap').textContent = 'Ждём вас на ' + state.serviceName + ' ' + state.date + ' в ' + state.time;
+    el('recap').textContent = `Ждём вас на «${state.serviceName}» ${state.date} в ${state.time}`;
+    fillFormFromStorage();
     cta.textContent = 'Подтвердить запись'; cta.disabled = false;
   }
   function goDone(b) {
     state.screen = 'done'; show('screen-done'); BB.hide();
     el('done-summary').innerHTML =
-      '<span>Дата</span> &nbsp;<b>' + b.date + '</b><br><span>Время</span> &nbsp;<b>' + b.start + '</b><br>'
-      + '<span>Услуга</span> &nbsp;' + b.serviceName + '<br><span>Авто</span> &nbsp;' + b.brand + '<br><span>Госномер</span> &nbsp;' + b.plate;
+      `<span>Дата</span> &nbsp;<b>${b.date}</b><br>` +
+      `<span>Время</span> &nbsp;<b>${b.start}</b><br>` +
+      `<span>Услуга</span> &nbsp;<b>${b.serviceName}</b><br>` +
+      `<span>Авто</span> &nbsp;<b>${b.brand}</b><br>` +
+      `<span>Госномер</span> &nbsp;<b>${b.plate}</b>`;
     cta.textContent = 'Закрыть'; cta.disabled = false;
   }
   function show(id) {
-    ['screen-select', 'screen-form', 'screen-done'].forEach(function (s) { el(s).classList.toggle('hidden', s !== id); });
+    ['screen-select', 'screen-form', 'screen-done'].forEach(s => el(s).classList.toggle('hidden', s !== id));
     window.scrollTo(0, 0);
   }
-  function syncCta() { if (state.screen === 'select') cta.disabled = !(state.date && state.service && state.time); }
+  function syncCta() {
+    if (state.screen === 'select') cta.disabled = !(state.date && state.service && state.time);
+  }
 
   function onCta() {
     if (cta.disabled) return;
@@ -382,11 +447,14 @@
   }
 
   function submit() {
-    var brand = el('brand').value.trim(), plate = el('plate').value.trim(), phone = el('phone').value.trim();
+    const brand = el('brand').value.trim();
+    const plate = el('plate').value.trim();
+    const phone = el('phone').value.trim();
+
     if (!brand || !plate) { tg.showAlert('Заполните марку и госномер.'); return; }
     if (phone.replace(/\D/g, '').length < 11) { tg.showAlert('Введите телефон полностью.'); return; }
 
-    var u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+    const u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
     cta.disabled = true; cta.innerHTML = '<div class="spinner"></div>Сохраняем…';
 
     post({
@@ -394,11 +462,12 @@
       car_brand: brand, plate_number: plate, phone: phone,
       telegram_id: u.id ? String(u.id) : '', telegram_username: u.username || '',
       initData: tg.initData || '', reschedule_of: state.rescheduleOf || ''
-    }).then(function (res) {
+    }).then(res => {
       cta.innerHTML = ''; cta.textContent = 'Подтвердить запись'; cta.disabled = false;
       if (!res.ok) { tg.showAlert(res.error || 'Не удалось записаться'); goSelect(); return; }
+      saveUserData(brand, plate, phone);
       goDone(res.booking);
-    }).catch(function () {
+    }).catch(() => {
       cta.innerHTML = ''; cta.textContent = 'Подтвердить запись'; cta.disabled = false;
       tg.showAlert('Нет связи с сервером.');
     });
