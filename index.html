@@ -1,197 +1,229 @@
-Вот полный код файла index_updated.html:
-
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Запись</title>
+  <!-- Шрифты IBM Plex Sans + Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    /* ------------------------------------------------------------
+       ТОЛЬКО ВИЗУАЛЬНЫЕ УЛУЧШЕНИЯ — БЕЗ ИЗМЕНЕНИЯ ЛОГИКИ
+    ------------------------------------------------------------ */
     :root {
-      --page:    #eceef2;
+      --page:    #f4f6fa;        /* более спокойный, "дорогой" фон */
       --surface: #ffffff;
-      --ink:     #14161b;
-      --text:    #1d2229;
-      --muted:   #7a808b;
-      --muted2:  #545b66;
-      --line:    #e4e7ec;
+      --ink:     #1a1e2a;
+      --text:    #2c313d;
+      --muted:   #6b7280;
+      --muted2:  #4b5563;
+      --line:    #e9edf2;
       --accent:  #1f6feb;
-      --accent-soft: #e9f1fe;
-      --r:  18px;
-      --r2: 12px;
+      --accent-soft: #ecf3fe;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --r:  20px;
+      --r2: 14px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { background: var(--page); }
     body {
-      font-family: 'Inter', -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+      font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif;
       color: var(--text); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased;
     }
-    .app { max-width: 430px; margin: 0 auto; padding: 16px 16px 100px; }
+    .app { max-width: 440px; margin: 0 auto; padding: 20px 16px 100px; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .screen { animation: fade .22s ease both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .screen { animation: fade .28s ease; }
     .hidden { display: none !important; }
 
-    .head { margin-bottom: 20px; }
-    .head h1 { font-size: 17px; font-weight: 700; letter-spacing: -.3px; color: var(--ink); }
-    .head p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    /* заголовок экрана */
+    .head { margin-bottom: 24px; }
+    .head h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: var(--ink); line-height: 1.2; }
+    .head p { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
-    .sec { margin-bottom: 20px; }
-    .sec-title { font-size: 13px; font-weight: 600; color: var(--muted2); margin: 0 2px 8px; }
+    /* секции */
+    .sec { margin-bottom: 28px; }
+    .sec-title { font-size: 13px; font-weight: 600; color: var(--muted2); margin: 0 0 10px; letter-spacing: 0.3px; text-transform: uppercase; }
 
-    /* dates */
-    .date-row { display: flex; gap: 8px; overflow-x: auto; padding: 1px; scrollbar-width: none; }
+    /* ----- ДАТЫ ----- */
+    .date-row { display: flex; gap: 10px; overflow-x: auto; padding: 2px 1px 4px; scrollbar-width: none; }
     .date-row::-webkit-scrollbar { display: none; }
     .date-card {
-      flex: 0 0 auto; min-width: 68px; background: var(--surface); border: 1.5px solid var(--line);
-      border-radius: var(--r2); padding: 10px 12px 11px; text-align: center; cursor: pointer;
-      transition: border-color .12s, background .12s;
+      flex: 0 0 auto; min-width: 74px; background: var(--surface);
+      border: none; border-radius: var(--r2); padding: 12px 8px 10px;
+      text-align: center; cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.12s, box-shadow 0.2s, background 0.2s;
     }
-    .date-card .d-label { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
-    .date-card .d-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .date-card.active { border-color: var(--accent); background: var(--accent-soft); }
-    .date-card.active .d-label { color: var(--accent); }
+    .date-card .d-label { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .date-card .d-date { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 450; }
+    .date-card.active {
+      background: var(--accent-soft);
+      box-shadow: 0 2px 8px rgba(31, 111, 235, 0.12);
+      outline: 1px solid var(--accent);
+    }
+    .date-card.active .d-label { color: var(--accent); font-weight: 600; }
 
-    /* services */
-    .service-list { display: flex; flex-direction: column; gap: 8px; }
+    /* ----- УСЛУГИ (без радио-кнопок, улучшенный вес) ----- */
+    .service-list { display: flex; flex-direction: column; gap: 10px; }
     .service {
-      display: flex; align-items: center; gap: 13px; background: var(--surface);
-      border: 1.5px solid var(--line); border-radius: var(--r); padding: 14px 15px;
-      cursor: pointer; transition: border-color .12s, background .12s;
+      display: flex; align-items: center; gap: 16px; background: var(--surface);
+      border: none; border-radius: var(--r); padding: 16px 18px;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
-    .service.active { border-color: var(--accent); background: var(--accent-soft); }
-    .radio { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #c8cdd6; position: relative; transition: border-color .12s; }
-    .service.active .radio { border-color: var(--accent); }
-    .service.active .radio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+    .service.active {
+      background: var(--accent-soft);
+      box-shadow: 0 4px 12px rgba(31, 111, 235, 0.1);
+      outline: 1px solid var(--accent);
+    }
+    /* вместо радио-кнопки — тонкая полоска слева (акцент) */
+    .service::before {
+      content: '';
+      width: 3px; height: 28px; background: transparent;
+      border-radius: 4px; transition: background 0.15s;
+    }
+    .service.active::before { background: var(--accent); }
     .service .info { flex: 1; min-width: 0; }
-    .service .s-name { font-size: 15px; font-weight: 600; color: var(--ink); }
-    .service .s-desc { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
-    .service .s-dur { font-size: 13px; font-weight: 600; color: var(--muted2); white-space: nowrap; }
+    .service .s-name { font-size: 16px; font-weight: 600; color: var(--ink); }
+    .service .s-desc { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+    .service .s-dur { font-size: 13px; font-weight: 500; color: var(--muted2); background: #f0f2f5; padding: 4px 10px; border-radius: 40px; white-space: nowrap; }
 
-    /* slots */
-    .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; min-height: 22px; }
+    /* ----- СЛОТЫ ВРЕМЕНИ (моноширинный шрифт) ----- */
+    .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .slot {
-      background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r2);
-      padding: 11px 0; text-align: center; font-size: 14px; font-weight: 600; color: var(--text);
-      cursor: pointer; transition: border-color .12s, background .12s, color .12s;
+      background: var(--surface); border: none; border-radius: 14px;
+      padding: 12px 0; text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px; font-weight: 500; color: var(--text);
+      cursor: pointer; transition: all 0.15s;
+      box-shadow: var(--shadow-sm);
     }
-    .slot.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .slot.active {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 2px 10px rgba(31, 111, 235, 0.3);
+      transform: scale(0.97);
+    }
     .loading-line {
-      grid-column: 1 / -1; display: flex; align-items: center; gap: 9px;
-      color: var(--muted); font-size: 13px; white-space: nowrap;
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 10px;
+      color: var(--muted); font-size: 13px;
     }
-    .hint { font-size: 13px; color: var(--muted); margin-top: 6px; padding: 0 2px; }
+    .hint { font-size: 13px; color: var(--muted); margin-top: 8px; padding-left: 4px; }
 
-    /* form */
+    /* ----- ФОРМА (клиентский вид) ----- */
     .recap {
-      background: var(--accent-soft); border: 1.5px solid #d6e6fd; border-radius: var(--r);
-      padding: 13px 15px; font-size: 14px; color: var(--text); margin-bottom: 16px; font-weight: 500; line-height: 1.4;
+      background: var(--accent-soft); border: none; border-radius: var(--r);
+      padding: 14px 18px; font-size: 15px; color: var(--text); margin-bottom: 20px;
+      font-weight: 500; line-height: 1.4; box-shadow: var(--shadow-sm);
     }
-    .form-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r); padding: 4px 15px 16px; }
-    .field { padding-top: 14px; }
+    .form-card { background: var(--surface); border: none; border-radius: var(--r); padding: 6px 0 10px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .field { padding: 14px 18px; }
     .field + .field { border-top: 1px solid var(--line); }
-    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--muted2); margin-bottom: 6px; letter-spacing: -0.2px; }
     .field input {
-      width: 100%; padding: 12px 13px; border: 1.5px solid var(--line); border-radius: var(--r2);
-      background: #fafbfc; color: var(--text); font-size: 15px; font-family: inherit;
+      width: 100%; padding: 12px 0; border: none; border-bottom: 1.5px solid var(--line);
+      background: transparent; color: var(--text); font-size: 16px; font-family: 'IBM Plex Sans', monospace;
+      transition: border-color 0.12s;
     }
-    .field input:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .field input:focus { outline: none; border-bottom-color: var(--accent); }
 
-    /* done */
-    .done { text-align: center; padding-top: 14px; }
-    .done .check { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
-    .done .check svg { width: 24px; height: 24px; }
-    .done h1 { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 16px; letter-spacing: -.3px; }
-    .summary { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r); padding: 15px 17px; text-align: left; line-height: 2; font-size: 14px; }
-    .summary span { color: var(--muted); }
+    /* ----- ЭКРАН ГОТОВО (тонкие улучшения) ----- */
+    .done { text-align: center; padding-top: 20px; }
+    .done .check { width: 56px; height: 56px; border-radius: 56px; background: var(--accent-soft); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border: none; }
+    .done .check svg { width: 28px; height: 28px; stroke: var(--accent); stroke-width: 2; }
+    .done h1 { font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 20px; letter-spacing: -0.3px; }
+    .summary { background: var(--surface); border: none; border-radius: var(--r); padding: 20px 22px; text-align: left; line-height: 1.8; font-size: 15px; box-shadow: var(--shadow-sm); }
+    .summary span { color: var(--muted); font-weight: 500; }
     .summary b { font-weight: 600; color: var(--ink); }
-    .done .note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+    .done .note { font-size: 13px; color: var(--muted); margin-top: 18px; }
 
-    .banner { background: var(--accent-soft); color: var(--accent); border-radius: var(--r2); padding: 11px 14px; font-size: 13px; margin-bottom: 16px; font-weight: 500; }
-
-    /* footer */
-    .footer { position: fixed; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, var(--page) 70%, transparent); padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); z-index: 30; }
-    .footer-inner { max-width: 430px; margin: 0 auto; }
-    .cta {
-      width: 100%; height: 52px; border: none; border-radius: 14px; background: var(--accent);
-      color: #fff; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .12s, opacity .12s;
+    .banner {
+      background: var(--accent-soft); color: var(--accent); border-radius: 14px;
+      padding: 14px 16px; font-size: 14px; margin-bottom: 24px; font-weight: 500;
+      border-left: 3px solid var(--accent);
     }
-    .cta:disabled { background: #c6cbd4; cursor: default; }
-    .cta .spinner { width: 18px; height: 18px; border-width: 2px; border-color: rgba(255,255,255,.45); border-top-color: #fff; }
 
-    /* blue spinner */
+    /* ----- КНОПКА (взрослый тактильный вес) ----- */
+    .footer { position: fixed; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, var(--page) 70%, transparent); padding: 14px 16px calc(16px + env(safe-area-inset-bottom)); z-index: 30; }
+    .footer-inner { max-width: 440px; margin: 0 auto; }
+    .cta {
+      width: 100%; height: 56px; border: none; border-radius: 28px; background: var(--accent);
+      color: #fff; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(31, 111, 235, 0.25);
+    }
+    .cta:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(31, 111, 235, 0.2); }
+    .cta:disabled { background: #cdd2dc; box-shadow: none; transform: none; cursor: default; }
+    .cta .spinner { width: 20px; height: 20px; border-width: 2px; border-color: rgba(255,255,255,.4); border-top-color: #fff; }
+
     .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .7s linear infinite; flex: 0 0 auto; }
-    #overlay { position: fixed; inset: 0; background: var(--page); z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; }
-    #overlay .spinner { width: 30px; height: 30px; border-width: 3px; }
-    #overlay .txt { font-size: 13px; color: var(--muted); }
+    #overlay { position: fixed; inset: 0; background: var(--page); z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+    #overlay .spinner { width: 32px; height: 32px; border-width: 3px; }
+    #overlay .txt { font-size: 14px; color: var(--muted); }
   </style>
 </head>
 <body>
 
-  <div id="overlay"><div class="spinner"></div><div class="txt">Загрузка…</div></div>
+<div id="overlay"><div class="spinner"></div><div class="txt">Загрузка…</div></div>
 
-  <div class="app">
-    <div id="reschedule-banner" class="banner hidden">Перенос записи: выберите новые дату и время. Прежняя запись будет отменена.</div>
+<div class="app">
+  <div id="reschedule-banner" class="banner hidden">Перенос записи: выберите новые дату и время. Прежняя запись будет отменена.</div>
 
-    <!-- Шаг 1 -->
-    <div id="screen-select" class="screen hidden">
-      <div class="head">
-        <h1 id="title">Запись на автомойку</h1>
-        <p>Выберите услугу и удобное время</p>
-      </div>
-
-      <div class="sec">
-        <div class="sec-title">Что нужно сделать?</div>
-        <div id="services" class="service-list"></div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-title">Когда Вам удобно приехать?</div>
-        <div id="dates" class="date-row"></div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-title">Во сколько Вас ждать?</div>
-        <div id="slots" class="slot-grid"></div>
-        <p id="slots-hint" class="hint"></p>
-      </div>
+  <!-- Шаг 1 -->
+  <div id="screen-select" class="screen hidden">
+    <div class="head">
+      <h1 id="title">Запись на автомойку</h1>
+      <p>Выберите услугу и удобное время</p>
     </div>
-
-    <!-- Шаг 2 -->
-    <div id="screen-form" class="screen hidden">
-      <div class="head"><h1>Данные бронирования</h1></div>
-      <div id="recap" class="recap"></div>
-      <div class="form-card">
-        <div class="field"><label>Марка автомобиля</label><input id="brand" placeholder="Toyota Camry" autocomplete="off"></div>
-        <div class="field"><label>Госномер</label><input id="plate" placeholder="А123ВС777" autocomplete="off"></div>
-        <div class="field"><label>Телефон для связи</label><input id="phone" type="tel" inputmode="tel" value="+7 "></div>
-      </div>
+    <div class="sec">
+      <div class="sec-title">Что нужно сделать?</div>
+      <div id="services" class="service-list"></div>
     </div>
-
-    <!-- Шаг 3 -->
-    <div id="screen-done" class="screen hidden">
-      <div class="done">
-        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#1f6feb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
-        <h1>Запись подтверждена</h1>
-        <div id="done-summary" class="summary"></div>
-        <p class="note">Подтверждение отправлено в чат с ботом.</p>
-      </div>
+    <div class="sec">
+      <div class="sec-title">Когда Вам удобно приехать?</div>
+      <div id="dates" class="date-row"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Во сколько Вас ждать?</div>
+      <div id="slots" class="slot-grid"></div>
+      <p id="slots-hint" class="hint"></p>
     </div>
   </div>
 
-  <div class="footer"><div class="footer-inner">
-    <button id="cta" class="cta" disabled>Продолжить</button>
-  </div></div>
+  <!-- Шаг 2 -->
+  <div id="screen-form" class="screen hidden">
+    <div class="head"><h1>Данные бронирования</h1></div>
+    <div id="recap" class="recap"></div>
+    <div class="form-card">
+      <div class="field"><label>Марка автомобиля</label><input id="brand" placeholder="Toyota Camry" autocomplete="off"></div>
+      <div class="field"><label>Госномер</label><input id="plate" placeholder="А123ВС777" autocomplete="off"></div>
+      <div class="field"><label>Телефон для связи</label><input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __"></div>
+    </div>
+  </div>
+
+  <!-- Шаг 3 -->
+  <div id="screen-done" class="screen hidden">
+    <div class="done">
+      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#1f6feb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h1>Запись подтверждена</h1>
+      <div id="done-summary" class="summary"></div>
+      <p class="note">Подтверждение отправлено в чат с ботом.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer"><div class="footer-inner">
+  <button id="cta" class="cta" disabled>Продолжить</button>
+</div></div>
 
 <script>
-  // ===== вставьте URL Apps Script Web App (/exec) =====
+  // ===== ВСЯ ЛОГИКА ОСТАЛАСЬ БЕЗ ИЗМЕНЕНИЙ =====
   var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLyP5R3uqX2HC2K82neifEnZ4cP68e6E6JM2TtPZDBDxTzXAsQjV50JjI2GfPoVTFH/exec';
 
   var SERVICE_DESC = {
@@ -202,7 +234,7 @@
 
   var tg = window.Telegram.WebApp;
   tg.ready(); tg.expand();
-  try { tg.setBackgroundColor('#eceef2'); tg.setHeaderColor('#eceef2'); } catch (e) {}
+  try { tg.setBackgroundColor('#f4f6fa'); tg.setHeaderColor('#f4f6fa'); } catch (e) {}
 
   var state = { date: null, service: null, serviceName: '', time: null, rescheduleOf: null, screen: 'select' };
   state.rescheduleOf = new URLSearchParams(location.search).get('reschedule');
@@ -249,7 +281,7 @@
     services.forEach(function (s) {
       var c = document.createElement('div');
       c.className = 'service';
-      c.innerHTML = '<div class="radio"></div>'
+      c.innerHTML = '<div class="radio" style="display:none;"></div>'
         + '<div class="info"><div class="s-name">' + s.name + '</div>'
         + '<div class="s-desc">' + (SERVICE_DESC[s.id] || '') + '</div></div>'
         + '<div class="s-dur">' + s.duration + ' мин</div>';
@@ -345,4 +377,3 @@
 </script>
 </body>
 </html>
-```
