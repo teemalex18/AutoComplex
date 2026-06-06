@@ -1,3 +1,6 @@
+Вот полный код файла index_updated.html:
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -140,22 +143,22 @@
     <!-- Шаг 1 -->
     <div id="screen-select" class="screen hidden">
       <div class="head">
-        <h1 id="title">Онлайн-запись</h1>
-        <p>Выберите услугу, дату и время</p>
+        <h1 id="title">Запись на автомойку</h1>
+        <p>Выберите услугу и удобное время</p>
       </div>
 
       <div class="sec">
-        <div class="sec-title">Дата</div>
-        <div id="dates" class="date-row"></div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-title">Услуга</div>
+        <div class="sec-title">Что нужно сделать?</div>
         <div id="services" class="service-list"></div>
       </div>
 
       <div class="sec">
-        <div class="sec-title">Время</div>
+        <div class="sec-title">Когда Вам удобно приехать?</div>
+        <div id="dates" class="date-row"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">Во сколько Вас ждать?</div>
         <div id="slots" class="slot-grid"></div>
         <p id="slots-hint" class="hint"></p>
       </div>
@@ -189,7 +192,7 @@
 
 <script>
   // ===== вставьте URL Apps Script Web App (/exec) =====
-  var APPS_SCRIPT_URL = 'PASTE_WEB_APP_URL';
+  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLyP5R3uqX2HC2K82neifEnZ4cP68e6E6JM2TtPZDBDxTzXAsQjV50JjI2GfPoVTFH/exec';
 
   var SERVICE_DESC = {
     express: 'Быстрая мойка кузова снаружи',
@@ -259,7 +262,7 @@
 
   function loadSlots() {
     el('slots').innerHTML = ''; el('slots-hint').textContent = ''; syncCta();
-    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите дату и услугу.'; return; }
+    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите услугу и дату.'; return; }
     el('slots').innerHTML = '<div class="loading-line"><div class="spinner"></div>Ищем свободное время…</div>';
     api('action=getSlots&date=' + encodeURIComponent(state.date) + '&service=' + encodeURIComponent(state.service))
       .then(function (res) {
@@ -342,3 +345,4 @@
 </script>
 </body>
 </html>
+```
