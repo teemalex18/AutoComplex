@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Запись</title>
+  <title>Запись на автомойку</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=wciPC_u9ESYVB9c77quwS4Vu-RzvuNUoe-mh7ZHX_mfnIOU6nyVJmPPunm73LDfiEjWJ8dt_bfECcX9zyswkEM1d6du1Fbhj0qqpqzsTAIvHPh89_3T0bIuWWehZfQje0PweOgc0wbiWWloGHDB62ccMlP8Gx_DsPkRXO-zNimpW_Yh99YIc8AngEUBJEWd1DBR5JLgd7usx_hGZBTlYKL-5gkt6m2JvAdEJ_dATyzJirCcFlXP48dQVV7LDNG0Ta78C8nSmGakCXPupxax7SaZ1OtQdso1VnCttwOolS7pBMJ45-_E7w4aEPPWHbHpzMzi22GyuWZRVNpTEkm0_Pw" charset="UTF-8"></script><script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --page:    #eceef2;
@@ -140,22 +140,22 @@
     <!-- Шаг 1 -->
     <div id="screen-select" class="screen hidden">
       <div class="head">
-        <h1 id="title">Онлайн-запись</h1>
-        <p>Выберите услугу, дату и время</p>
+        <h1 id="title">Запись на автомойку</h1>
+        <p>Выберите услугу и удобное время</p>
       </div>
 
       <div class="sec">
-        <div class="sec-title">Дата</div>
-        <div id="dates" class="date-row"></div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-title">Услуга</div>
+        <div class="sec-title">Что нужно сделать?</div>
         <div id="services" class="service-list"></div>
       </div>
 
       <div class="sec">
-        <div class="sec-title">Время</div>
+        <div class="sec-title">Когда Вам удобно приехать?</div>
+        <div id="dates" class="date-row"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">Во сколько Вас ждать?</div>
         <div id="slots" class="slot-grid"></div>
         <p id="slots-hint" class="hint"></p>
       </div>
@@ -259,7 +259,7 @@
 
   function loadSlots() {
     el('slots').innerHTML = ''; el('slots-hint').textContent = ''; syncCta();
-    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите дату и услугу.'; return; }
+    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите услугу и дату.'; return; }
     el('slots').innerHTML = '<div class="loading-line"><div class="spinner"></div>Ищем свободное время…</div>';
     api('action=getSlots&date=' + encodeURIComponent(state.date) + '&service=' + encodeURIComponent(state.service))
       .then(function (res) {
