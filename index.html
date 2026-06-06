@@ -5,175 +5,253 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Запись</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg:     var(--tg-theme-bg-color, #ffffff);
-      --text:   var(--tg-theme-text-color, #16181c);
-      --hint:   var(--tg-theme-hint-color, #8b949e);
-      --card:   var(--tg-theme-secondary-bg-color, #f1f3f5);
-      --accent: var(--tg-theme-button-color, #388bfd);
-      --accent-dim: color-mix(in srgb, var(--accent) 12%, transparent);
-      --border: color-mix(in srgb, var(--hint) 28%, transparent);
+      --page:   #eef0f3;
+      --surface:#ffffff;
+      --ink:    #14171c;
+      --text:   #1c2026;
+      --muted:  #8b919c;
+      --line:   #e7e9ee;
+      --accent: #2b7de9;
+      --accent-soft: #eaf2fd;
+      --radius: 18px;
+      --radius-sm: 13px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { background: var(--page); }
     body {
-      font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif;
-      background: var(--bg); color: var(--text);
-      padding: 14px 14px 28px; font-size: 14px; line-height: 1.4;
+      font-family: 'Inter', -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+      color: var(--text); font-size: 15px; line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
     }
+    .app { max-width: 430px; margin: 0 auto; padding: 18px 16px 104px; }
+
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    .screen { animation: fade .2s ease both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .screen { animation: fade .22s ease both; }
+    .hidden { display: none !important; }
 
-    h1 { font-size: 15px; font-weight: 700; margin-bottom: 14px; letter-spacing: -.2px; }
-    .label {
-      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px;
-      color: var(--hint); margin: 16px 0 7px;
+    /* header */
+    .head { margin-bottom: 18px; }
+    .head h1 { font-size: 20px; font-weight: 700; letter-spacing: -.4px; color: var(--ink); }
+    .head p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    .sec { margin-bottom: 18px; }
+    .sec-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 2px 9px; }
+
+    /* dates: horizontal cards */
+    .date-row { display: flex; gap: 9px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
+    .date-row::-webkit-scrollbar { display: none; }
+    .date-card {
+      flex: 0 0 auto; min-width: 70px; background: var(--surface); border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm); padding: 11px 12px 12px; text-align: center; cursor: pointer;
+      transition: border-color .12s, background .12s;
     }
-    .label:first-of-type { margin-top: 4px; }
+    .date-card .d-label { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .date-card .d-date { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .date-card.active { border-color: var(--accent); background: var(--accent-soft); }
+    .date-card.active .d-label { color: var(--accent); }
 
-    .grid { display: grid; gap: 7px; }
-    .grid-4 { grid-template-columns: repeat(4, 1fr); }
-
-    .chip {
-      background: var(--card); border: 1.5px solid transparent; border-radius: 9px;
-      padding: 9px 6px; text-align: center; cursor: pointer; line-height: 1.25;
-      transition: border-color .12s, background .12s; font-weight: 500;
+    /* services: cards */
+    .service-list { display: flex; flex-direction: column; gap: 9px; }
+    .service {
+      display: flex; align-items: center; gap: 13px; background: var(--surface);
+      border: 1.5px solid var(--line); border-radius: var(--radius); padding: 14px 15px;
+      cursor: pointer; transition: border-color .12s, background .12s;
     }
-    .chip small { display: block; color: var(--hint); font-size: 11px; font-weight: 400; margin-top: 1px; }
-    .chip.active { border-color: var(--accent); background: var(--accent-dim); }
-    .chip.active small { color: var(--accent); }
+    .service.active { border-color: var(--accent); background: var(--accent-soft); }
+    .radio { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cdd2db; position: relative; transition: border-color .12s; }
+    .service.active .radio { border-color: var(--accent); }
+    .service.active .radio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+    .service .info { flex: 1; min-width: 0; }
+    .service .s-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .service .s-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .service .s-dur { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
-    .service { text-align: left; padding: 11px 13px; display: flex; justify-content: space-between; align-items: center; }
-    .service small { margin: 0; }
+    /* slots: grid */
+    .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .slot {
+      background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+      padding: 11px 0; text-align: center; font-size: 14px; font-weight: 600; color: var(--text);
+      cursor: pointer; transition: border-color .12s, background .12s, color .12s;
+    }
+    .slot.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .hint { font-size: 13px; color: var(--muted); margin-top: 4px; padding: 0 2px; }
+    .slots-loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
 
-    .field { margin-bottom: 11px; }
-    .field label { display: block; font-size: 12px; color: var(--hint); margin-bottom: 5px; }
+    /* form */
+    .recap {
+      background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+      padding: 13px 15px; font-size: 14px; color: var(--text); margin-bottom: 16px; font-weight: 500;
+    }
+    .recap span { color: var(--muted); font-weight: 400; }
+    .form-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 6px 15px 15px; }
+    .field { padding-top: 14px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
     .field input {
-      width: 100%; padding: 11px 12px; border-radius: 9px;
-      border: 1.5px solid var(--border); background: var(--bg); color: var(--text);
-      font-size: 15px; font-family: inherit;
+      width: 100%; padding: 12px 13px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+      background: #fafbfc; color: var(--text); font-size: 15px; font-family: inherit;
     }
-    .field input:focus { outline: none; border-color: var(--accent); }
+    .field input:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .field + .field { border-top: 1px solid var(--line); }
 
-    .summary { background: var(--card); border-radius: 10px; padding: 13px 15px; line-height: 1.9; font-size: 14px; }
-    .summary b { font-weight: 600; }
-    .muted { color: var(--hint); font-size: 13px; margin-top: 8px; }
-    .center { text-align: center; padding: 18px 6px; }
-    .hidden { display: none; }
+    /* done */
+    .done { text-align: center; padding-top: 12px; }
+    .done .check {
+      width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--accent);
+      margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .done .check svg { width: 24px; height: 24px; }
+    .done h1 { font-size: 19px; font-weight: 700; color: var(--ink); margin-bottom: 16px; letter-spacing: -.3px; }
+    .summary {
+      background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+      padding: 15px 17px; text-align: left; line-height: 2; font-size: 14px;
+    }
+    .summary span { color: var(--muted); }
+    .summary b { font-weight: 600; color: var(--ink); }
+    .done .note { font-size: 13px; color: var(--muted); margin-top: 14px; }
 
     .banner {
-      background: var(--accent-dim); color: var(--accent); border-radius: 9px;
-      padding: 9px 12px; font-size: 13px; margin-bottom: 12px; font-weight: 500;
+      background: var(--accent-soft); color: var(--accent); border-radius: var(--radius-sm);
+      padding: 11px 14px; font-size: 13px; margin-bottom: 16px; font-weight: 500;
     }
 
-    /* круглый синий спиннер */
-    .spinner {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 3px solid var(--border); border-top-color: var(--accent);
-      animation: spin .7s linear infinite;
+    /* sticky footer button */
+    .footer {
+      position: fixed; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, var(--page) 72%, transparent);
+      padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); z-index: 30;
     }
-    #overlay {
-      position: fixed; inset: 0; background: var(--bg); z-index: 50;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    .footer-inner { max-width: 430px; margin: 0 auto; }
+    .cta {
+      width: 100%; height: 52px; border: none; border-radius: 14px; background: var(--accent);
+      color: #fff; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity .12s, background .12s;
     }
-    #overlay .txt { font-size: 13px; color: var(--hint); }
-    .slots-loading { display: flex; align-items: center; gap: 10px; color: var(--hint); font-size: 13px; padding: 4px 0; }
-    .slots-loading .spinner { width: 18px; height: 18px; border-width: 2px; }
+    .cta:disabled { background: #c3c8d1; cursor: default; }
+    .cta .spinner { width: 18px; height: 18px; border-width: 2px; border-color: rgba(255,255,255,.4); border-top-color: #fff; }
+
+    /* round blue spinner */
+    .spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .7s linear infinite; }
+    #overlay { position: fixed; inset: 0; background: var(--page); z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+    #overlay .txt { font-size: 13px; color: var(--muted); }
   </style>
 </head>
 <body>
 
-  <!-- загрузка (холодный старт Apps Script) -->
-  <div id="overlay">
-    <div class="spinner"></div>
-    <div class="txt">Загрузка…</div>
+  <div id="overlay"><div class="spinner"></div><div class="txt">Загрузка…</div></div>
+
+  <div class="app">
+    <div id="reschedule-banner" class="banner hidden">Перенос записи: выберите новые дату и время. Прежняя запись будет отменена.</div>
+
+    <!-- Шаг 1 -->
+    <div id="screen-select" class="screen hidden">
+      <div class="head">
+        <h1 id="title">Запись</h1>
+        <p>Выберите услугу, дату и удобное время</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">Дата</div>
+        <div id="dates" class="date-row"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">Услуга</div>
+        <div id="services" class="service-list"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">Время</div>
+        <div id="slots" class="slot-grid"></div>
+        <p id="slots-hint" class="hint"></p>
+      </div>
+    </div>
+
+    <!-- Шаг 2 -->
+    <div id="screen-form" class="screen hidden">
+      <div class="head"><h1>Ваши данные</h1></div>
+      <div id="recap" class="recap"></div>
+      <div class="form-card">
+        <div class="field"><label>Марка автомобиля</label><input id="brand" placeholder="Toyota Camry" autocomplete="off"></div>
+        <div class="field"><label>Госномер</label><input id="plate" placeholder="А123ВС777" autocomplete="off"></div>
+        <div class="field"><label>Телефон</label><input id="phone" type="tel" inputmode="tel" value="+7 "></div>
+      </div>
+    </div>
+
+    <!-- Шаг 3 -->
+    <div id="screen-done" class="screen hidden">
+      <div class="done">
+        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#2b7de9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h1>Запись подтверждена</h1>
+        <div id="done-summary" class="summary"></div>
+        <p class="note">Подтверждение отправлено в чат с ботом.</p>
+      </div>
+    </div>
   </div>
 
-  <div id="reschedule-banner" class="banner hidden">Перенос записи: выберите новые дату и время. Старая запись будет отменена.</div>
-
-  <!-- Шаг 1: выбор -->
-  <div id="step-select" class="screen hidden">
-    <h1 id="title">Запись</h1>
-    <div class="label">Дата</div>
-    <div id="dates" class="grid grid-4"></div>
-    <div class="label">Услуга</div>
-    <div id="services" class="grid"></div>
-    <div class="label">Время</div>
-    <div id="slots" class="grid grid-4"></div>
-    <p id="slots-hint" class="muted"></p>
-  </div>
-
-  <!-- Шаг 2: данные -->
-  <div id="step-form" class="screen hidden">
-    <h1>Ваши данные</h1>
-    <div class="field"><label>Марка автомобиля</label><input id="brand" placeholder="Toyota Camry" autocomplete="off"></div>
-    <div class="field"><label>Госномер</label><input id="plate" placeholder="А123ВС777" autocomplete="off"></div>
-    <div class="field"><label>Телефон</label><input id="phone" type="tel" inputmode="tel" value="+7 "></div>
-  </div>
-
-  <!-- Шаг 3: готово -->
-  <div id="step-done" class="screen hidden center">
-    <h1>Запись создана</h1>
-    <div id="done-summary" class="summary" style="text-align:left;"></div>
-    <p class="muted">Подтверждение отправлено в чат с ботом.</p>
-  </div>
+  <div class="footer"><div class="footer-inner">
+    <button id="cta" class="cta" disabled>Продолжить</button>
+  </div></div>
 
 <script>
   // ===== вставьте URL Apps Script Web App (/exec) =====
   var APPS_SCRIPT_URL = 'PASTE_WEB_APP_URL';
 
+  // короткие описания услуг (только UI, бэкенд не трогаем)
+  var SERVICE_DESC = {
+    express: 'Быстрая мойка кузова снаружи',
+    complex: 'Кузов снаружи и коврики',
+    complex_salon: 'Полный комплекс с уборкой салона'
+  };
+
   var tg = window.Telegram.WebApp;
   tg.ready(); tg.expand();
-  try { tg.setHeaderColor && tg.setHeaderColor('secondary_bg_color'); } catch (e) {}
+  try { tg.setBackgroundColor('#eef0f3'); tg.setHeaderColor('#eef0f3'); } catch (e) {}
 
-  var state = { date: null, service: null, time: null, rescheduleOf: null, screen: 'select' };
+  var state = { date: null, service: null, serviceName: '', time: null, rescheduleOf: null, screen: 'select' };
   state.rescheduleOf = new URLSearchParams(location.search).get('reschedule');
 
   var el = function (id) { return document.getElementById(id); };
-  var MB = tg.MainButton, BB = tg.BackButton;
+  var cta = el('cta'), BB = tg.BackButton;
 
-  function api(query) {
-    return fetch(APPS_SCRIPT_URL + '?' + query).then(function (r) { return r.json(); });
-  }
-  function post(payload) {
-    return fetch(APPS_SCRIPT_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(function (r) { return r.json(); });
+  function api(q) { return fetch(APPS_SCRIPT_URL + '?' + q).then(function (r) { return r.json(); }); }
+  function post(p) {
+    return fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) })
+      .then(function (r) { return r.json(); });
   }
 
-  // ---------- инициализация ----------
+  // ---------- init ----------
   function init() {
     if (state.rescheduleOf) el('reschedule-banner').classList.remove('hidden');
-    MB.onClick(onMainButton);
+    cta.addEventListener('click', onCta);
     BB.onClick(function () { goSelect(); });
     api('action=getConfig').then(function (res) {
       if (!res.ok) return fail();
       el('overlay').classList.add('hidden');
-      el('title').textContent = state.rescheduleOf ? 'Перенос записи' : 'Запись · ' + res.washName;
+      el('title').textContent = state.rescheduleOf ? 'Перенос записи' : 'Запись в ' + res.washName;
       renderDates(res.dates);
       renderServices(res.services);
       goSelect();
     }).catch(fail);
   }
-  function fail() {
-    el('overlay').innerHTML = '<div class="txt">Нет связи с сервером. Закройте и откройте заново.</div>';
-  }
+  function fail() { el('overlay').innerHTML = '<div class="txt">Нет связи с сервером. Закройте и откройте заново.</div>'; }
 
-  // ---------- рендер ----------
+  // ---------- render ----------
   function renderDates(dates) {
     var box = el('dates'); box.innerHTML = '';
     var wd = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-    dates.forEach(function (d) {
-      var p = d.split('.');
-      var js = new Date(p[2], p[1] - 1, p[0]);
+    dates.forEach(function (d, i) {
+      var p = d.split('.'); var js = new Date(p[2], p[1] - 1, p[0]);
+      var label = i === 0 ? 'Сегодня' : i === 1 ? 'Завтра' : wd[js.getDay()];
       var c = document.createElement('div');
-      c.className = 'chip';
-      c.innerHTML = '<b>' + p[0] + '.' + p[1] + '</b><small>' + wd[js.getDay()] + '</small>';
-      c.onclick = function () { pick('dates', c, function () { state.date = d; }); };
+      c.className = 'date-card';
+      c.innerHTML = '<div class="d-label">' + label + '</div><div class="d-date">' + p[0] + '.' + p[1] + '</div>';
+      c.onclick = function () { pick('dates', 'date-card', c, function () { state.date = d; }); };
       box.appendChild(c);
     });
   }
@@ -181,38 +259,41 @@
     var box = el('services'); box.innerHTML = '';
     services.forEach(function (s) {
       var c = document.createElement('div');
-      c.className = 'chip service';
-      c.innerHTML = '<span>' + s.name + '</span><small>' + s.duration + ' мин</small>';
-      c.onclick = function () { pick('services', c, function () { state.service = s.id; }); };
+      c.className = 'service';
+      c.innerHTML = '<div class="radio"></div>'
+        + '<div class="info"><div class="s-name">' + s.name + '</div>'
+        + '<div class="s-desc">' + (SERVICE_DESC[s.id] || '') + '</div></div>'
+        + '<div class="s-dur">' + s.duration + ' мин</div>';
+      c.onclick = function () { pick('services', 'service', c, function () { state.service = s.id; state.serviceName = s.name; }); };
       box.appendChild(c);
     });
   }
-  function clearActive(id) {
-    Array.prototype.forEach.call(el(id).children, function (c) { c.classList.remove('active'); });
+  function clearActive(group) {
+    Array.prototype.forEach.call(el(group).children, function (c) { c.classList.remove('active'); });
   }
-  function pick(group, chip, setter) {
-    clearActive(group); chip.classList.add('active'); setter();
+  function pick(group, cls, node, setter) {
+    clearActive(group); node.classList.add('active'); setter();
     state.time = null; loadSlots();
   }
 
   function loadSlots() {
-    el('slots').innerHTML = ''; el('slots-hint').textContent = ''; syncMain();
-    if (!state.date || !state.service) { el('slots-hint').textContent = 'Выберите дату и услугу.'; return; }
+    el('slots').innerHTML = ''; el('slots-hint').textContent = ''; syncCta();
+    if (!state.date || !state.service) { el('slots-hint').textContent = 'Сначала выберите дату и услугу.'; return; }
     el('slots').innerHTML = '<div class="slots-loading"><div class="spinner"></div>Ищем свободное время…</div>';
     api('action=getSlots&date=' + encodeURIComponent(state.date) + '&service=' + encodeURIComponent(state.service))
       .then(function (res) {
         el('slots').innerHTML = '';
         if (!res.ok || !res.slots.length) { el('slots-hint').textContent = 'На этот день свободного времени нет.'; return; }
         res.slots.forEach(function (t) {
-          var c = document.createElement('div');
-          c.className = 'chip'; c.textContent = t;
-          c.onclick = function () { clearActive('slots'); c.classList.add('active'); state.time = t; syncMain(); };
-          el('slots').appendChild(c);
+          var b = document.createElement('div');
+          b.className = 'slot'; b.textContent = t;
+          b.onclick = function () { clearActive('slots'); b.classList.add('active'); state.time = t; syncCta(); };
+          el('slots').appendChild(b);
         });
       });
   }
 
-  // ---------- телефон: маска +7 ----------
+  // ---------- phone ----------
   function formatPhone(raw) {
     var d = raw.replace(/\D/g, '');
     if (d[0] === '8') d = '7' + d.slice(1);
@@ -228,64 +309,56 @@
   el('phone').addEventListener('input', function () { this.value = formatPhone(this.value); });
   el('phone').addEventListener('focus', function () { if (!this.value) this.value = '+7 '; });
 
-  // ---------- навигация через нативные кнопки Telegram ----------
-  function goSelect() {
-    state.screen = 'select'; switchScreen('step-select'); BB.hide();
-    MB.setText('Продолжить'); syncMain();
-  }
+  // ---------- screens ----------
+  function goSelect() { state.screen = 'select'; show('screen-select'); BB.hide(); cta.textContent = 'Продолжить'; syncCta(); }
   function goForm() {
-    state.screen = 'form'; switchScreen('step-form'); BB.show();
-    MB.setText('Подтвердить запись'); MB.enable(); MB.show();
+    state.screen = 'form'; show('screen-form'); BB.show();
+    el('recap').innerHTML = state.serviceName + ' <span>·</span> ' + state.date + ' <span>·</span> ' + state.time;
+    cta.textContent = 'Подтвердить запись'; cta.disabled = false;
   }
   function goDone(b) {
-    state.screen = 'done'; switchScreen('step-done'); BB.hide();
+    state.screen = 'done'; show('screen-done'); BB.hide();
     el('done-summary').innerHTML =
-      'Дата: <b>' + b.date + '</b><br>Время: <b>' + b.start + '</b><br>'
-      + 'Услуга: ' + b.serviceName + '<br>Авто: ' + b.brand + '<br>Госномер: ' + b.plate;
-    MB.setText('Закрыть'); MB.enable(); MB.show();
+      '<span>Дата</span> &nbsp;<b>' + b.date + '</b><br><span>Время</span> &nbsp;<b>' + b.start + '</b><br>'
+      + '<span>Услуга</span> &nbsp;' + b.serviceName + '<br><span>Авто</span> &nbsp;' + b.brand + '<br><span>Госномер</span> &nbsp;' + b.plate;
+    cta.textContent = 'Закрыть'; cta.disabled = false;
   }
-  function switchScreen(id) {
-    ['step-select', 'step-form', 'step-done'].forEach(function (s) {
-      el(s).classList.toggle('hidden', s !== id);
-    });
+  function show(id) {
+    ['screen-select', 'screen-form', 'screen-done'].forEach(function (s) { el(s).classList.toggle('hidden', s !== id); });
     window.scrollTo(0, 0);
   }
-  function syncMain() {
+  function syncCta() {
     if (state.screen !== 'select') return;
-    if (state.date && state.service && state.time) { MB.enable(); MB.show(); }
-    else { MB.hide(); }
+    cta.disabled = !(state.date && state.service && state.time);
   }
 
-  function onMainButton() {
+  function onCta() {
+    if (cta.disabled) return;
     if (state.screen === 'select') return goForm();
     if (state.screen === 'done') return tg.close();
     if (state.screen === 'form') return submit();
   }
 
   function submit() {
-    var brand = el('brand').value.trim();
-    var plate = el('plate').value.trim();
-    var phone = el('phone').value.trim();
+    var brand = el('brand').value.trim(), plate = el('plate').value.trim(), phone = el('phone').value.trim();
     if (!brand || !plate) { tg.showAlert('Заполните марку и госномер.'); return; }
     if (phone.replace(/\D/g, '').length < 11) { tg.showAlert('Введите телефон полностью.'); return; }
 
     var u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
-    MB.showProgress(); MB.disable();
+    cta.disabled = true; cta.innerHTML = '<div class="spinner"></div>Сохраняем…';
 
     post({
-      action: 'createBooking',
-      date: state.date, service: state.service, time: state.time,
+      action: 'createBooking', date: state.date, service: state.service, time: state.time,
       car_brand: brand, plate_number: plate, phone: phone,
-      telegram_id: u.id ? String(u.id) : '',
-      telegram_username: u.username || '',
-      initData: tg.initData || '',
-      reschedule_of: state.rescheduleOf || ''
+      telegram_id: u.id ? String(u.id) : '', telegram_username: u.username || '',
+      initData: tg.initData || '', reschedule_of: state.rescheduleOf || ''
     }).then(function (res) {
-      MB.hideProgress(); MB.enable();
+      cta.innerHTML = ''; cta.textContent = 'Подтвердить запись'; cta.disabled = false;
       if (!res.ok) { tg.showAlert(res.error || 'Не удалось записаться'); goSelect(); return; }
       goDone(res.booking);
     }).catch(function () {
-      MB.hideProgress(); MB.enable(); tg.showAlert('Нет связи с сервером.');
+      cta.innerHTML = ''; cta.textContent = 'Подтвердить запись'; cta.disabled = false;
+      tg.showAlert('Нет связи с сервером.');
     });
   }
 
