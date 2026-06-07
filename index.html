@@ -405,8 +405,26 @@
     if (d.length >= 9) r += '-' + d.slice(9, 11);
     return r;
   }
-  el('phone').addEventListener('input', function () { this.value = formatPhone(this.value); });
-  // FIX: гарантируем +7 при фокусе, даже если поле полностью пустое (без данных в storage)
+
+  // Флаг: пользователь нажал backspace/delete — не перезаписываем значение форматтером
+  let _phoneDeleting = false;
+  el('phone').addEventListener('keydown', function (e) {
+    _phoneDeleting = (e.key === 'Backspace' || e.key === 'Delete');
+  });
+  // На мобильных keydown может не прийти — ловим через beforeinput
+  el('phone').addEventListener('beforeinput', function (e) {
+    if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+      _phoneDeleting = true;
+    }
+  });
+  el('phone').addEventListener('input', function () {
+    if (_phoneDeleting) { _phoneDeleting = false; return; } // удаление — не трогаем
+    const pos = this.selectionStart;
+    const formatted = formatPhone(this.value);
+    this.value = formatted;
+    // восстанавливаем позицию курсора после перезаписи
+    try { this.setSelectionRange(pos, pos); } catch (e) {}
+  });
   el('phone').addEventListener('focus', function () {
     if (!this.value || this.value === '+7') this.value = '+7 ';
   });
